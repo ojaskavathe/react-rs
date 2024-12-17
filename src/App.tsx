@@ -3,14 +3,14 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import init, { add } from "calc-lib";
+import init, { calculate } from "calc-lib";
 
 function App() {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
     init().then(() => {
-      console.log(add(1, 3))
+      console.log(calculate("10/2"))
     });
   }, []);
 
