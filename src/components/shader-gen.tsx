@@ -10,6 +10,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import Prism from "prismjs";
+import "prismjs/components/prism-c";
+import "prismjs/themes/prism.css";
+
 import defaultShader from "@/res/shaders/default.frag?raw";
 import { setupPipeline } from "@/lib/webgl-boilerplate";
 
@@ -20,8 +24,12 @@ export function ShaderGen() {
   const [prompt, setPrompt] = useState("");
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const codeRef = useRef<HTMLElement>(null); //FIX: prism prevents shaderCode update propogation 
 
   useEffect(() => {
+    codeRef.current!.textContent = shaderCode;
+    Prism.highlightAll();
+
     const canvas = canvasRef.current!;
     const gl = canvas.getContext("webgl2");
 
@@ -30,21 +38,25 @@ export function ShaderGen() {
       return;
     }
 
+    console.log("changed shaderCode");
     return setupPipeline(canvas, gl, shaderCode, setShaderValid);
   }, [shaderCode]);
 
   const generateShader = async () => {
-    setShaderCode(`
-#version 300 es
+    const response = await fetch("http://localhost:4000/gemini", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt }),
+    });
 
-precision highp float;
+    if (!response.ok) {
+      console.log("oof");
+    }
 
-out vec4 fragColor;
-
-void main() {
-	fragColor = vec4(1.0, 0.0, 0.0, 1.0);
-}
-    `);
+    const data = await response.json();
+    setShaderCode(data.result);
   };
 
   return (
@@ -71,11 +83,11 @@ void main() {
           <canvas
             ref={canvasRef}
             id="shaderCanvas"
-            className="w-full aspect-square bg-gray-100 rounded-l-md"
+            className="w-full mt-2 aspect-square bg-gray-100 rounded-l-md"
           />
 
-          <pre className="text-sm p-4 bg-gray-100 text-left overflow-auto aspect-square rounded-r-md">
-            <code className="language-c !text-sm">{shaderCode}</code>
+          <pre className="text-sm bg-gray-100 text-left overflow-auto aspect-square rounded-r-md">
+            <code ref={codeRef} className="language-c !text-sm">{shaderCode}</code>
           </pre>
         </div>
         {!shaderValid && (
