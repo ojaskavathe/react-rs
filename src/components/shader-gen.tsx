@@ -43,7 +43,7 @@ export function ShaderGen() {
   }, [shaderCode]);
 
   const generateShader = async () => {
-    const response = await fetch("http://localhost:4000/gemini", {
+    const response = await fetch("https://gemini-elx.gigalixir.com/gen_shader", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
