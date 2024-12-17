@@ -8,19 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import defaultShader from "@/res/shaders/default.frag?raw";
+import { setupPipeline } from "@/lib/webgl-boilerplate";
 
 export function ShaderGen() {
-  const [shaderCode, setShaderCode] = useState(`
-#version 300 es
-
-precision highp float;
-
-out vec4 fragColor;
-
-void main() {
-	fragColor = vec4(0.0, 1.0, 0.0, 1.0);
-}
-  `);
+  const [shaderValid, setShaderValid] = useState(false);
+  const [shaderCode, setShaderCode] = useState(defaultShader);
 
   const [prompt, setPrompt] = useState("");
 
@@ -34,6 +29,8 @@ void main() {
       console.error("WebGL not supported in this browser.");
       return;
     }
+
+    return setupPipeline(canvas, gl, shaderCode, setShaderValid);
   }, [shaderCode]);
 
   const generateShader = async () => {
@@ -77,10 +74,13 @@ void main() {
             className="w-full aspect-square bg-gray-100 rounded-l-md"
           />
 
-          <pre className="text-sm bg-gray-100 text-left overflow-auto aspect-square rounded-r-md">
+          <pre className="text-sm p-4 bg-gray-100 text-left overflow-auto aspect-square rounded-r-md">
             <code className="language-c !text-sm">{shaderCode}</code>
           </pre>
         </div>
+        {!shaderValid && (
+          <Label className="text-red-700">Invalid Shader Code!</Label>
+        )}
       </CardContent>
     </Card>
   );
