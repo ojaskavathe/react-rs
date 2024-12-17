@@ -1,0 +1,15 @@
+{
+  "name": "calc-lib",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "calc_lib_bg.wasm",
+    "calc_lib.js",
+    "calc_lib.d.ts"
+  ],
+  "main": "calc_lib.js",
+  "types": "calc_lib.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
