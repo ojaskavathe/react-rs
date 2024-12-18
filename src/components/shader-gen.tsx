@@ -45,7 +45,7 @@ export function ShaderGen() {
 
   const generateShader = () => {
     setLoading(true);
-    fetch("https://gemini.ojaskavathe.com/gen_shader", {
+    fetch(import.meta.env.VITE_ELX_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
