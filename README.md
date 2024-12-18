@@ -1,50 +1,36 @@
-# React + TypeScript + Vite
+# React Frontend for a Two-tab app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small project that demonstrates a React-based interface integrating 
+- Rust (via wasm)
+- WebGL for rendering shaders.
 
-Currently, two official plugins are available:
+## Dependencies
+- nodejs
+- Rust
+- wasm-pack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+If you use nix, a flake is provided with all the dependencies.
 
-## Expanding the ESLint configuration
+## Building
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Build the wasm library using:
+```
+npm run build:wasm
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Set the shader generator server's URL in a .env/.env.*
+```
+VITE_ELX_URL=https://my.generator.com/gen_shader
+```
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Then run
+```
+npm run build
+```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+# Developing
+
+Start the dev server using:
+```
+npm run dev
 ```
