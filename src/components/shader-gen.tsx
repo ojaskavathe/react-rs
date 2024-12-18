@@ -23,8 +23,10 @@ export function ShaderGen() {
 
   const [prompt, setPrompt] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const codeRef = useRef<HTMLElement>(null); //FIX: prism prevents shaderCode update propogation 
+  const codeRef = useRef<HTMLElement>(null); //FIX: prism prevents shaderCode update propogation
 
   useEffect(() => {
     codeRef.current!.textContent = shaderCode;
@@ -38,25 +40,26 @@ export function ShaderGen() {
       return;
     }
 
-    console.log("changed shaderCode");
     return setupPipeline(canvas, gl, shaderCode, setShaderValid);
   }, [shaderCode]);
 
-  const generateShader = async () => {
-    const response = await fetch("https://gemini.ojaskavathe.com/gen_shader", {
+  const generateShader = () => {
+    setLoading(true);
+    fetch("https://gemini.ojaskavathe.com/gen_shader", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ prompt }),
-    });
-
-    if (!response.ok) {
-      console.log("oof");
-    }
-
-    const data = await response.json();
-    setShaderCode(data.result);
+    })
+      .then(response => response.json())
+      .then(data => {
+        setLoading(false);
+        setShaderCode(data.result);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   return (
@@ -74,8 +77,11 @@ export function ShaderGen() {
             id="name"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            disabled={loading}
           />
-          <Button type="submit" onClick={generateShader}>
+          <Button type="submit" onClick={generateShader}
+            disabled={loading}
+          >
             Generate
           </Button>
         </div>
@@ -87,7 +93,9 @@ export function ShaderGen() {
           />
 
           <pre className="text-sm bg-gray-100 text-left overflow-auto aspect-square rounded-r-md">
-            <code ref={codeRef} className="language-c !text-sm">{shaderCode}</code>
+            <code ref={codeRef} className="language-c !text-sm">
+              {shaderCode}
+            </code>
           </pre>
         </div>
         {!shaderValid && (
